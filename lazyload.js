@@ -51,22 +51,24 @@ class LazyLoad {
   loadImage({ selector = null, images = [] } = {}) {
     const isValidSelector = this.#checkValidCSSSelector(selector);
     if (selector === null || selector === undefined || typeof selector !== 'string' || isValidSelector === false) {
-      throw new Error('Selector is required and must be a valid CSS selector');
+      throw new Error('"selector" is required and must be a valid CSS selector');
     }
 
     this.#observer = new IntersectionObserver(this.#renderImage, this.#options);
 
     const elements = document.querySelectorAll(selector);
-    elements.forEach(elem => {
-      if (images.length) for (let imgPath of images) {
-        if (typeof imgPath !== 'string') {
-          throw new Error('Image path must be a string');
-        }
-        else elem.dataset.path = imgPath;
-      }
 
-      this.#observer.observe(elem)
-    });
+    if (Array.isArray(images) === true) {
+      if (images.length) {
+        for (let i = 0; i < elements.length; i++) {
+          if (typeof images[i] !== 'string') throw new Error('Image path must be a string');
+          else elements[i].dataset.imageUrl = images[i];
+        }
+      }
+    }
+    else throw new Error('"images" must be an array of string!');
+
+    elements.forEach(elem => { this.#observer.observe(elem); })
   }
 
 
@@ -84,7 +86,7 @@ class LazyLoad {
       if (entry.isIntersecting) {
         const img = entry.target;
 
-        const path = img.dataset.path || null
+        const path = img.dataset.imageUrl || null
         if (path) img.src = path;
 
         observer.unobserve(img); // Stop observing this image
@@ -106,11 +108,11 @@ class LazyLoad {
   executeFn({ selector = null, exeFn = null } = {}) {
     const isValidSelector = this.#checkValidCSSSelector(selector);
     if (selector === null || selector === undefined || typeof selector !== 'string' || isValidSelector === false) {
-      throw new Error('Selector is required and must be a valid CSS selector');
+      throw new Error('"selector" is required and must be a valid CSS selector');
     }
 
     if (selector === null || selector === undefined || typeof exeFn !== 'function') {
-      throw new Error('exeFn must be a function');
+      throw new Error('"exeFn" must be a function');
     }
 
     this.#observer = new IntersectionObserver(this.#handleFunctionExecution(exeFn), this.#options);

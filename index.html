@@ -13,13 +13,13 @@
   </section>
 
   <section class="img-wrapper">
-    <img class="image group-img" src="" data-path="./image/img-1.jpg" alt="">
-    <img class="image group-img" src="" data-path="./image/img-2.jpg" alt="">
-    <img class="image group-img" src="" data-path="./image/img-3.jpg" alt="">
+    <img class="image group-img" src="" alt="">
+    <img class="image group-img" src="" alt="">
+    <img class="image group-img" src="" alt="">
   </section>
 
   <section class="img-wrapper">
-    <img id="single-image" class="image" src="" data-path="./image/img-4.jpg" alt="">
+    <img id="single-image" class="image" src="" data-image-url="./image/img-4.jpg" alt="">
   </section>
 
   <section id="api-call" class="h-100">
@@ -34,7 +34,9 @@
     imgLazyLoad.loadImage({
       selector: ".group-img",
       images: [
-
+        "./image/img-1.jpg",
+        "./image/img-2.jpg",
+        "./image/img-3.jpg"
       ]
     })
 
