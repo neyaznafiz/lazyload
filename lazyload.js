@@ -2,9 +2,10 @@ class LazyLoad {
   #observer = null;
   #options = null;
 
-  constructor() { this.config(); }
+  constructor() {
+    this.config();
+  }
 
-  
   /**
    * Configures the observer options.
    * @param {Object} [options] - Observer options.
