@@ -40,15 +40,17 @@
       ]
     })
 
-    lazyLoad.config({loadBefore: 200});
-    lazyLoad.loadImage({selector: '#single-image'})
-
     async function api() {
       console.log('called api');
     }
-
+    
     lazyLoad.config({loadAfter: 0.5});
     lazyLoad.executeFn({selector: "#api-call", exeFn: api});
+
+    lazyLoad.config({loadBefore: 200});
+    lazyLoad.loadImage({selector: '#single-image'})
+
+    lazyLoad.destroy()
   </script>
 </body>
 </html>
