@@ -179,3 +179,5 @@ class LazyLoad {
     else return false;
   }
 }
+
+export { LazyLoad };

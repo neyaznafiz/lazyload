@@ -26,9 +26,9 @@
     <h1>api call</h1>
   </section>
 
-  <script src="./lazyload.js"></script>
+  <script type="module">
+    import {LazyLoad} from "./lazyLoad.js";
 
-  <script>
     const imgLazyLoad = new LazyLoad();
     imgLazyLoad.config({loadBefore: 200});
     imgLazyLoad.loadImage({
