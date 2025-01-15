@@ -4,8 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  
+  <section class="h-100">
+    <h1>Hello</h1>
+  </section>
+
+  <section class="img-wrapper">
+    <img class="image group-img" src="" data-path="./image/img-1.jpg" alt="">
+    <img class="image group-img" src="" data-path="./image/img-2.jpg" alt="">
+    <img class="image group-img" src="" data-path="./image/img-3.jpg" alt="">
+  </section>
+
+  <section class="img-wrapper">
+    <img id="single-image" class="image" src="" data-path="./image/img-4.jpg" alt="">
+  </section>
+
+  <section id="api-call" class="h-100">
+    <h1>api call</h1>
+  </section>
+
+  <script src="./lazyload.js"></script>
+
+  <script>
+    const imgLazyLoad = new LazyLoad();
+    imgLazyLoad.config({rootMargin: 200});
+    imgLazyLoad.loadImage({
+      selector: ".group-img",
+      images: [
+
+      ]
+    })
+
+    const imgLazyLoad2 = new LazyLoad();
+    imgLazyLoad2.loadImage({selector: '#single-image'})
+
+    async function api() {
+      console.log('called api');
+      return "hey"
+    }
+
+    const apiLazyLoad = new LazyLoad();
+    apiLazyLoad.executeFn({selector: "#api-call", exeFn: api,});
+  </script>
 </body>
 </html>
