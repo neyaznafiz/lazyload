@@ -35,15 +35,15 @@ class LazyLoad {
       throw new Error('"loadBefore" must be a positive number!');
     }
 
-    if (loadAfter === null || loadAfter === undefined || typeof loadAfter !== 'number' || loadAfter < 0) {
-      throw new Error('"loadAfter" must be a positive number!');
+    if (loadAfter === null || loadAfter === undefined || typeof loadAfter !== 'number') {
+      throw new Error('"loadAfter" must be a number between 0 and 1!');
     }
 
     // Observer Options
     this.#options = {
-      root, // Observe with respect to the viewport
-      rootMargin: `${loadBefore}px`, // Trigger {rootMargin}px before the element fully enters the viewport
-      threshold: loadAfter, // Trigger when {threshold}% of the element is visible
+      root, // The element that is used as the viewport for checking visibility
+      rootMargin: `${loadBefore}px`, // Trigger {loadBefore}px before the element fully enters the viewport
+      threshold: loadAfter, // Trigger when {loadAfter}% of the element is visible
     };
   }
 
@@ -81,7 +81,7 @@ class LazyLoad {
     }
     else throw new Error('"images" must be an array of string!');
 
-    elements.forEach(elem => { this.#observer.observe(elem); })
+    elements.forEach(elem => { this.#observer.observe(elem); });
   }
 
 
@@ -99,10 +99,10 @@ class LazyLoad {
       if (entry.isIntersecting) {
         const img = entry.target;
 
-        const path = img.dataset.imageUrl || null
+        const path = img.dataset.imageUrl || null;
         if (path) img.src = path;
 
-        observer.unobserve(img); // Stop observing this image
+        observer.unobserve(img);
       }
     });
   }
@@ -131,7 +131,7 @@ class LazyLoad {
     this.#observer = new IntersectionObserver(this.#handleFunctionExecution(exeFn), this.#options);
 
     const element = document.querySelector(selector);
-    this.#observer.observe(element)
+    this.#observer.observe(element);
   }
 
   /**
@@ -152,7 +152,7 @@ class LazyLoad {
         if (entry.isIntersecting) {
           exeFn();
 
-          observer.unobserve(entry.target); // Stop observing this element
+          observer.unobserve(entry.target);
         }
       });
     }
