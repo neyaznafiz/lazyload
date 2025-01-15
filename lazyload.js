@@ -4,6 +4,7 @@ class LazyLoad {
 
   constructor() { this.config(); }
 
+  
   /**
    * Configures the observer options.
    * @param {Object} [options] - Observer options.
@@ -11,26 +12,37 @@ class LazyLoad {
    *   the viewport for checking visibility of the target. Must be the
    *   ancestor of the target. Defaults to the browser viewport if not
    *   specified or if null.
-   * @param {number} [options.rootMargin] - Margin around the root. If
+   * @param {number} [options.loadBefore] - Margin around the root. If
    *   the root is null, this value is ignored. Can have values similar
    *   to the CSS margin property, e.g. "10px 20px 30px 40px" (top, right,
    *   bottom, left). The values can be percentages. This set of values
    *   serves as a shorthand for setting the individual properties.
-   *   Defaults to "0px 0px 0px 0px" (no margin) if not specified or if
-   *   null.
-   * @param {number|number[]} [options.threshold] - A single number
+   *   Defaults to 0 if not specified or if null.
+   * @param {number|number[]} [options.loadAfter] - A single number
    *   between 0 and 1.0 which indicates at what percentage of the
    *   target's visibility the observer will trigger. Can also be an
    *   array of numbers. The callback will be called whenever the
    *   visibility of the target passes one of the values in the array.
    *   Defaults to 0 if not specified or if null.
    */
-  config({ root = null, rootMargin = 0, threshold = 0 } = {}) {
+  config({ root = null, loadBefore = 0, loadAfter = 0 } = {}) {
+    let isValidDOM = true;
+    if (root !== null) isValidDOM = this.checkValidDOMElement(root);
+    if(isValidDOM === false) throw new Error('"root" must be a valid DOM element!');
+
+    if (loadBefore === null || loadBefore === undefined || typeof loadBefore !== 'number' || loadBefore < 0) {
+      throw new Error('"loadBefore" must be a positive number!');
+    }
+
+    if (loadAfter === null || loadAfter === undefined || typeof loadAfter !== 'number' || loadAfter < 0) {
+      throw new Error('"loadAfter" must be a positive number!');
+    }
+
     // Observer Options
     this.#options = {
       root, // Observe with respect to the viewport
-      rootMargin: `${rootMargin}px`, // Trigger {rootMargin}px before the element fully enters the viewport
-      threshold, // Trigger when {threshold}% of the element is visible
+      rootMargin: `${loadBefore}px`, // Trigger {rootMargin}px before the element fully enters the viewport
+      threshold: loadAfter, // Trigger when {threshold}% of the element is visible
     };
   }
 
@@ -143,6 +155,16 @@ class LazyLoad {
         }
       });
     }
+  }
+
+  /**
+   * Checks if the provided DOM element is valid or not.
+   * @param {Element} element - The element to check.
+   * @returns {boolean} - True if the element is valid, false if not.
+   */
+  checkValidDOMElement(element) {
+    if (element && element instanceof Element && element.nodeType === 1) return true;
+    else return false;
   }
 
   /**

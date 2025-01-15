@@ -30,7 +30,7 @@
 
   <script>
     const imgLazyLoad = new LazyLoad();
-    imgLazyLoad.config({rootMargin: 200});
+    imgLazyLoad.config({loadBefore: 200});
     imgLazyLoad.loadImage({
       selector: ".group-img",
       images: [
