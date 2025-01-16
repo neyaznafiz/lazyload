@@ -13,9 +13,25 @@
   </section>
 
   <section class="img-wrapper">
-    <img class="image group-img" src="" alt="">
-    <img class="image group-img" src="" alt="">
-    <img class="image group-img" src="" alt="">
+    <div class="group-img">
+      <img class="image" src="" alt="">
+    </div>
+    <div class="group-img">
+      <img class="image" src="" alt="">
+    </div>
+    <div class="group-img">
+      <img class="image" src="" alt="">
+    </div>
+  </section>
+
+  <section class="video-wrapper">
+    <iframe class="single-video" src="" data-video-url="./video/anime.mp4" frameborder="0" width="600" height="400"></iframe>
+  </section>
+
+  <section class="video-wrapper">
+    <video class="single-video-two" width="600" height="400" controls></video>
+    <video class="single-video-two" width="600" height="400" controls></video>
+    <video class="single-video-two" width="600" height="400" controls></video>
   </section>
 
   <section class="img-wrapper">
@@ -32,11 +48,25 @@
     const lazyLoad = new LazyLoad();
     lazyLoad.loadImage({
       selector: ".group-img",
+      srcTarget: "img",
       loadAfter: 0.5,
       images: [
         "./image/img-1.jpg",
         "./image/img-2.jpg",
         "./image/img-3.jpg"
+      ]
+    })
+
+    lazyLoad.loadVideo({
+      selector: ".single-video",
+    })
+
+    lazyLoad.loadVideo({
+      selector: ".single-video-two",
+      videos: [
+        "./video/anime.mp4",
+        "./video/anime.mp4",
+        "./video/anime.mp4",
       ]
     })
 

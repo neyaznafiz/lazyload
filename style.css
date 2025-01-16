@@ -8,8 +8,10 @@
   border: 1px solid red;
 }
 
-.img-wrapper {
+.img-wrapper, .video-wrapper {
   margin-top: 256px;
+  display: flex;
+  gap: 24px;
 }
 
 .image {

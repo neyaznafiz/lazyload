@@ -61,21 +61,32 @@ class LazyLoad {
    *   first element of the array. If the element of the array is not a
    *   string, an error is thrown.
    */
-  loadImage({ selector = null, images = [], root = null, loadBefore = 0, loadAfter = 0 } = {}) {
-    const isValidSelector = this.#checkValidCSSSelector(selector);
-    if (selector === null || selector === undefined || typeof selector !== 'string' || isValidSelector === false) {
+  loadImage({ selector = null, srcTarget = null, attr = null, images = [], root = null, loadBefore = 0, loadAfter = 0 } = {}) {
+    if (typeof selector !== "string" || this.#checkValidCSSSelector(selector) === false) {
       throw new Error('Failed to construct "LazyLoad": "selector" is required and must be a valid CSS selector');
+    }
+
+    if (srcTarget !== null) {
+      if (typeof srcTarget !== "string" || this.#checkValidCSSSelector(srcTarget) === false) {
+        throw new Error('Failed to construct "LazyLoad": "srcTarget" is must be a valid CSS selector or null');
+      }
+    }
+
+    if (attr !== null) {
+      if (attr === undefined || typeof attr !== 'string') {
+        throw new Error('Failed to construct "LazyLoad": "attr" is must be a string or null');
+      }
     }
 
     if(root !== null || loadBefore !== 0 || loadAfter !== 0) this.config({root, loadBefore, loadAfter });
 
-    this.#observer = new IntersectionObserver(this.#renderImage, this.#options);
+    this.#observer = new IntersectionObserver(this.#renderImage(srcTarget, attr), this.#options);
 
     const elements = document.querySelectorAll(selector);
 
     if (Array.isArray(images) === true) {
       if (images.length) {
-        for (let i = 0; i < elements.length; i++) {
+        for (let i = 0; i < images.length; i++) {
           if (typeof images[i] !== 'string') throw new Error('Failed to construct "LazyLoad": Image path must be a string');
           else elements[i].dataset.imageUrl = images[i];
         }
@@ -96,17 +107,104 @@ class LazyLoad {
    * @param {IntersectionObserver} observer - The IntersectionObserver
    *   that is watching the elements.
    */
-  #renderImage(entries, observer) {
-    entries.forEach(entry => {
+  #renderImage(srcTarget, attr) {
+    return (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const elem = entry.target;
+          const path = elem.dataset.imageUrl || null;
+
+          if (path) {
+            if (srcTarget) {
+              let srcElem = elem.querySelector(srcTarget)
+              attr ? srcElem.setAttribute(attr, path) : srcElem.src = path
+            }
+            else attr ? elem.setAttribute(attr, path) : elem.src = path;
+          }
+
+          observer.unobserve(elem);
+        }
+      });
+    }
+  }
+
+  /**
+   * Loads a video lazily when the element containing the video
+   * comes into view.
+   * @param {Object} [options] - Options for the lazy load.
+   * @param {string} [options.selector] - The CSS selector to target
+   *   elements for lazy loading. The selector must be a valid
+   *   CSS selector. If not specified, an error is thrown.
+   * @param {string[]} [options.videos] - An array of strings where each
+   *   string is a path to a video. If the array is empty, the video
+   *   will be loaded from the value of the `data-path` attribute of the
+   *   element. If the array is not empty, the video path is set to the
+   *   first element of the array. If the element of the array is not a
+   *   string, an error is thrown.
+   */
+  loadVideo({ selector = null, srcTarget = null, attr = null, videos = [], root = null, loadBefore = 0, loadAfter = 0 } = {}) {
+    if (typeof selector !== "string" || this.#checkValidCSSSelector(selector) === false) {
+      throw new Error('Failed to construct "LazyLoad": "selector" is required and must be a valid CSS selector');
+    }
+
+    if (srcTarget !== null) {
+      if (typeof srcTarget !== "string" || this.#checkValidCSSSelector(srcTarget) === false) {
+        throw new Error('Failed to construct "LazyLoad": "srcTarget" is must be a valid CSS selector or null');
+      }
+    }
+
+    if (attr !== null) {
+      if (attr === undefined || typeof attr !== 'string') {
+        throw new Error('Failed to construct "LazyLoad": "attr" is must be a string or null');
+      }
+    }
+
+    if(root !== null || loadBefore !== 0 || loadAfter !== 0) this.config({root, loadBefore, loadAfter });
+
+    this.#observer = new IntersectionObserver(this.#renderVideo(srcTarget, attr), this.#options);
+
+    const elements = document.querySelectorAll(selector);
+
+    if (Array.isArray(videos) === true) {
+      if (videos.length) {
+        for (let i = 0; i < videos.length; i++) {
+          if (typeof videos[i] !== 'string') throw new Error('Failed to construct "LazyLoad": Video path must be a string');
+          else elements[i].dataset.videoUrl = videos[i];
+        }
+      }
+    }
+    else throw new Error('Failed to construct "LazyLoad": "videos" must be an array of string!');
+
+    elements.forEach(elem => { this.#observer.observe(elem); });
+  }
+
+  /**
+   * The callback for IntersectionObserver when the video element enters the viewport.
+   * @param {string} [srcTarget] - The CSS selector of the element which holds the video path.
+   *   If null, the video path is set to the element itself.
+   * @param {string} [attr] - The attribute name of the element which holds the video path.
+   *   If null, the video path is set to the src attribute of the element.
+   * @returns {(entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void} - The callback function for IntersectionObserver.
+   */
+  #renderVideo(srcTarget, attr) {
+    return (entries, observer) => {
+      entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const img = entry.target;
+        const elem = entry.target;
+        const path = elem.dataset.videoUrl || null;
 
-        const path = img.dataset.imageUrl || null;
-        if (path) img.src = path;
+        if (path) {
+          if (srcTarget) {
+            let srcElem = elem.querySelector(srcTarget)
+            attr ? srcElem.setAttribute(attr, path) : srcElem.src = path
+          }
+          else attr ? elem.setAttribute(attr, path) : elem.src = path;
+        }
 
-        observer.unobserve(img);
+        observer.unobserve(elem);
       }
     });
+    }
   }
 
   /**
@@ -121,12 +219,11 @@ class LazyLoad {
    *   function must be a function. If not specified, an error is thrown.
    */
   executeFn({ selector = null, exeFn = null, root = null, loadBefore = 0, loadAfter = 0 } = {}) {
-    const isValidSelector = this.#checkValidCSSSelector(selector);
-    if (selector === null || selector === undefined || typeof selector !== 'string' || isValidSelector === false) {
+    if (typeof selector !== "string" || this.#checkValidCSSSelector(selector) === false) {
       throw new Error('Failed to construct "LazyLoad": "selector" is required and must be a valid CSS selector');
     }
 
-    if (selector === null || selector === undefined || typeof exeFn !== 'function') {
+    if (typeof exeFn !== 'function') {
       throw new Error('Failed to construct "LazyLoad": "exeFn" must be a function');
     }
 
