@@ -29,14 +29,14 @@ class LazyLoad {
   config({ root = null, loadBefore = 0, loadAfter = 0 } = {}) {
     let isValidDOM = true;
     if (root !== null) isValidDOM = this.checkValidDOMElement(root);
-    if(isValidDOM === false) throw new Error('"root" must be a valid DOM element!');
+    if(isValidDOM === false) throw new Error('Failed to construct "LazyLoad": "root" must be a valid DOM element!');
 
     if (loadBefore === null || loadBefore === undefined || typeof loadBefore !== 'number' || loadBefore < 0) {
-      throw new Error('"loadBefore" must be a positive number!');
+      throw new Error('Failed to construct "LazyLoad": "loadBefore" must be a positive number!');
     }
 
-    if (loadAfter === null || loadAfter === undefined || typeof loadAfter !== 'number') {
-      throw new Error('"loadAfter" must be a number between 0 and 1!');
+    if (loadAfter === null || loadAfter === undefined || typeof loadAfter !== 'number' || loadAfter < 0 || loadAfter > 1) {
+      throw new Error('Failed to construct "LazyLoad": "loadAfter" must be a number between 0 and 1!');
     }
 
     // Observer Options
@@ -61,11 +61,13 @@ class LazyLoad {
    *   first element of the array. If the element of the array is not a
    *   string, an error is thrown.
    */
-  loadImage({ selector = null, images = [] } = {}) {
+  loadImage({ selector = null, images = [], root = null, loadBefore = 0, loadAfter = 0 } = {}) {
     const isValidSelector = this.#checkValidCSSSelector(selector);
     if (selector === null || selector === undefined || typeof selector !== 'string' || isValidSelector === false) {
-      throw new Error('"selector" is required and must be a valid CSS selector');
+      throw new Error('Failed to construct "LazyLoad": "selector" is required and must be a valid CSS selector');
     }
+
+    if(root !== null || loadBefore !== 0 || loadAfter !== 0) this.config({root, loadBefore, loadAfter });
 
     this.#observer = new IntersectionObserver(this.#renderImage, this.#options);
 
@@ -74,12 +76,12 @@ class LazyLoad {
     if (Array.isArray(images) === true) {
       if (images.length) {
         for (let i = 0; i < elements.length; i++) {
-          if (typeof images[i] !== 'string') throw new Error('Image path must be a string');
+          if (typeof images[i] !== 'string') throw new Error('Failed to construct "LazyLoad": Image path must be a string');
           else elements[i].dataset.imageUrl = images[i];
         }
       }
     }
-    else throw new Error('"images" must be an array of string!');
+    else throw new Error('Failed to construct "LazyLoad": "images" must be an array of string!');
 
     elements.forEach(elem => { this.#observer.observe(elem); });
   }
@@ -118,15 +120,17 @@ class LazyLoad {
    *   the element containing the selector comes into view. The
    *   function must be a function. If not specified, an error is thrown.
    */
-  executeFn({ selector = null, exeFn = null } = {}) {
+  executeFn({ selector = null, exeFn = null, root = null, loadBefore = 0, loadAfter = 0 } = {}) {
     const isValidSelector = this.#checkValidCSSSelector(selector);
     if (selector === null || selector === undefined || typeof selector !== 'string' || isValidSelector === false) {
-      throw new Error('"selector" is required and must be a valid CSS selector');
+      throw new Error('Failed to construct "LazyLoad": "selector" is required and must be a valid CSS selector');
     }
 
     if (selector === null || selector === undefined || typeof exeFn !== 'function') {
-      throw new Error('"exeFn" must be a function');
+      throw new Error('Failed to construct "LazyLoad": "exeFn" must be a function');
     }
+
+    if(root !== null || loadBefore !== 0 || loadAfter !== 0) this.config({root, loadBefore, loadAfter });
 
     this.#observer = new IntersectionObserver(this.#handleFunctionExecution(exeFn), this.#options);
 

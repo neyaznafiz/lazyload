@@ -30,9 +30,9 @@
     import {LazyLoad} from "./lazyLoad.js";
 
     const lazyLoad = new LazyLoad();
-    lazyLoad.config({loadBefore: 0});
     lazyLoad.loadImage({
       selector: ".group-img",
+      loadAfter: 0.5,
       images: [
         "./image/img-1.jpg",
         "./image/img-2.jpg",
@@ -43,14 +43,13 @@
     async function api() {
       console.log('called api');
     }
-    
-    lazyLoad.config({loadAfter: 0.5});
+
     lazyLoad.executeFn({selector: "#api-call", exeFn: api});
 
     lazyLoad.config({loadBefore: 200});
     lazyLoad.loadImage({selector: '#single-image'})
 
-    lazyLoad.destroy()
+    // lazyLoad.destroy()
   </script>
 </body>
 </html>
