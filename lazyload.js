@@ -260,15 +260,6 @@ class LazyLoad {
   }
 
   /**
-   * Destroys the lazy load observer by disconnecting it and resetting the configuration.
-   * This stops observing any elements for lazy loading.
-   */
-  destroy() {
-    this.config();
-    this.#observer.disconnect();
-  }
-
-  /**
    * Checks if the provided DOM element is valid or not.
    * @param {Element} element - The element to check.
    * @returns {boolean} - True if the element is valid, false if not.

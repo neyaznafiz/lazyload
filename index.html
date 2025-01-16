@@ -34,18 +34,18 @@
     <video class="single-video-two" width="600" height="400" controls></video>
   </section>
 
-  <section class="img-wrapper">
-    <img id="single-image" class="image" src="" data-image-url="./image/img-4.jpg" alt="">
-  </section>
-
   <section id="api-call" class="h-100">
     <h1>api call</h1>
+  </section>
+
+  <section class="img-wrapper">
+    <img id="single-image" class="image" src="" data-image-url="./image/img-4.jpg" alt="">
   </section>
 
   <script type="module">
     import {LazyLoad} from "./lazyLoad.js";
 
-    const lazyLoad = new LazyLoad();
+    let lazyLoad = new LazyLoad();
     lazyLoad.loadImage({
       selector: ".group-img",
       srcTarget: "img",
@@ -75,11 +75,10 @@
     }
 
     lazyLoad.executeFn({selector: "#api-call", exeFn: api});
-
+    
     lazyLoad.config({loadBefore: 200});
     lazyLoad.loadImage({selector: '#single-image'})
 
-    // lazyLoad.destroy()
   </script>
 </body>
 </html>
